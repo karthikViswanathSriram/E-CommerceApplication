@@ -1,10 +1,15 @@
 package com.ecommerce.project.security;
 
-import com.ecommerce.project.model.AppRole;
-import com.ecommerce.project.model.Role;
-import com.ecommerce.project.model.User;
+import com.ecommerce.project.model.*;
+import com.ecommerce.project.payload.CategoryDTO;
+import com.ecommerce.project.payload.ProductDTO;
+import com.ecommerce.project.repository.CategoryRepository;
+import com.ecommerce.project.repository.ProductRepository;
 import com.ecommerce.project.repository.RoleRepository;
 import com.ecommerce.project.repository.UserRepository;
+import com.ecommerce.project.service.CategoryServiceImpl;
+import com.ecommerce.project.service.ProductServiceImpl;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +35,8 @@ import com.ecommerce.project.security.jwt.AuthEntryPointJwt;
 import com.ecommerce.project.security.jwt.AuthTokenFilter;
 import com.ecommerce.project.security.services.UserDetailsServiceImpl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Configuration
@@ -109,7 +116,12 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public CommandLineRunner initData(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner initData(RoleRepository roleRepository,
+                                      UserRepository userRepository,
+                                      PasswordEncoder passwordEncoder,
+                                      CategoryRepository categoryRepository,
+                                      ProductRepository productRepository,
+                                      ModelMapper modelMapper) {
         return args -> {
             // Retrieve or create roles
             Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
@@ -166,6 +178,27 @@ public class WebSecurityConfig {
                 admin.setRoles(adminRoles);
                 userRepository.save(admin);
             });
+
+            Category c1 = categoryRepository.save(modelMapper.map(new CategoryDTO(null,"Electronics"),Category.class));
+            Category c2 = categoryRepository.save(modelMapper.map(new CategoryDTO(null,"Health and Fitness"),Category.class));
+            Category c3 = categoryRepository.save(modelMapper.map(new CategoryDTO(null,"Produce"),Category.class));
+            categoryRepository.save(modelMapper.map(new CategoryDTO(null,"Dairy"),Category.class));
+
+            Product p1 = modelMapper.map(new ProductDTO(null,"Apple Smartwatch",null,"Apple smartwatch",10,500,20,450), Product.class);
+            Product p2 = modelMapper.map(new ProductDTO(null,"Google Pixel",null,"Google pixel smartphone",10,800,20,700), Product.class);
+            Product p3 = modelMapper.map(new ProductDTO(null,"Yoga Mat",null,"large Yoga Mat",10,20,5,15), Product.class);
+            Product p4 = modelMapper.map(new ProductDTO(null,"Head Massager 520",null,"Bluetooth wireless massager",10,120,20,100), Product.class);
+            Product p5 = modelMapper.map(new ProductDTO(null,"Apples",null,"Californian apples bag 3lb",10,25,0,25), Product.class);
+            Product p6 = modelMapper.map(new ProductDTO(null,"onion Bag",null,"Yellow onions 3lb bag",10,5,0,5), Product.class);
+
+            p1.setCategory(c1);p2.setCategory(c1);p3.setCategory(c2);p4.setCategory(c2);p5.setCategory(c3);p5.setCategory(c3);
+
+            productRepository.save(p1);
+            productRepository.save(p2);
+            productRepository.save(p3);
+            productRepository.save(p4);
+            productRepository.save(p5);
+            productRepository.save(p6);
         };
     }
 }
