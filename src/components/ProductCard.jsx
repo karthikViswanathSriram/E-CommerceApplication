@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { FaShoppingCart } from "react-icons/fa";
+import ProductViewModal from "./ProductViewModal";
+import { FiShoppingCart } from "react-icons/fi";
+import { Button } from "@mui/material";
 
 const ProductCard =({
         productId,
@@ -86,7 +89,7 @@ const ProductCard =({
                         </span>
                     )}
 
-                    <button 
+                    {/* <button 
                         disabled={!isAvailable || btnLoader}
                         onClick={()=>{}}
                         className={`bg-blue-500 ${isAvailable ? "opacity-100 hover:bg-blue-600" : "opacity-70"}
@@ -94,9 +97,23 @@ const ProductCard =({
                             w-36 flex justify-center`}>
                         <FaShoppingCart className="mr-2"/>
                         {isAvailable ? "Add to Cart" : "Stock out"}
-                    </button>
+                    </button> */}
+
+                    <Button variant="contained" color="primary" disabled={!isAvailable || btnLoader}
+                    onClick={()=>{}}
+                    className={`flex items-center gap-2 h-10 rounded-lg
+                                ${isAvailable ? "opacity-100" : "opacity-70"}`}>
+                        <FiShoppingCart/>
+                        {isAvailable ? "Add to Cart" : "Stock out"}
+                    </Button>
                 </div>                
             </div>
+            <ProductViewModal
+                open = {openProductViewModal}
+                setOpen = {setOpenProductViewModal}
+                product={selectedViewProduct}
+                isAvailable={isAvailable}
+            />
         </div>
     )
 }
