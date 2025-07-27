@@ -191,7 +191,7 @@ public class WebSecurityConfig {
             Product p5 = modelMapper.map(new ProductDTO(null,"Apples",null,"Californian apples bag 3lb",10,25,0,25), Product.class);
             Product p6 = modelMapper.map(new ProductDTO(null,"onion Bag",null,"Yellow onions 3lb bag",10,5,0,5), Product.class);
 
-            p1.setCategory(c1);p2.setCategory(c1);p3.setCategory(c2);p4.setCategory(c2);p5.setCategory(c3);p5.setCategory(c3);
+            p1.setCategory(c1);p2.setCategory(c1);p3.setCategory(c2);p4.setCategory(c2);p5.setCategory(c3);p6.setCategory(c3);
 
             productRepository.save(p1);
             productRepository.save(p2);
