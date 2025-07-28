@@ -1,25 +1,32 @@
 import { FaExclamationTriangle } from "react-icons/fa";
-import ProductCard from "./ProductCard";
+import ProductCard from "../shared/ProductCard";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProducts } from "../store/actions";
+import { fetchCategories, fetchProducts } from "../../store/actions";
 import { useEffect } from "react";
 import Filter from "./Filter";
+import useProductFilter from "../../hooks/useProductFilter";
+import { CircularProgress } from "@mui/material";
+import Loader from "../shared/Loader";
+import PaginationCustom from "../shared/PaginationCustom";
 
 const Products= ()=>{
     // state.<whatever is the key for the reducer defined in the store> 
-    const { products } = useSelector((state)=>state.products);
+    const { products,categories,pagination } = useSelector((state)=>state.products);
     const { isLoading,errorMessage } = useSelector((state)=>state.errors);
     const dispatch = useDispatch();
+    useProductFilter();
 
-    useEffect(() => {        
-      dispatch(fetchProducts());
-    }, [dispatch]);
+    useEffect(() => {
+      dispatch(fetchCategories());      
+    }, [dispatch])
+    
     
     return (
         <div className="lg:px-14 sm:px-8 px-4 py-14 2xl:w-[90%] 2xl:mx-auto">
-            <Filter />
+            <Filter categories={categories ? categories : []} />
             {isLoading ? (
-                <p>It is loading...</p>
+                // <p>It is loading...</p>
+                <Loader text="Please wait..."/>
             ): errorMessage ? (
                 <div className="flex justify-center items-center h-[200px]">
                     <FaExclamationTriangle className="text-slate-800
@@ -36,6 +43,12 @@ const Products= ()=>{
                         products.map((item,i)=><ProductCard key={i} {...item}/>)
                         }
                     </div>
+                    <div className="flex justify-center pt-10">
+                        <PaginationCustom 
+                            numberOfPage = {pagination?.totalPages}
+                            totalProducts = {pagination?.totalElements}/>
+                    </div>
+                    
                 </div>
             )}
         </div>

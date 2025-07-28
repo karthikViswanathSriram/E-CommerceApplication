@@ -1,19 +1,73 @@
 import { Button, FormControl, InputLabel, MenuItem, Select, Tooltip } from "@mui/material";
-import { useState } from "react";
-import { FiArrowUp, FiRefreshCw, FiSearch } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import { FiArrowDown, FiArrowUp, FiRefreshCw, FiSearch } from "react-icons/fi";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
-const Filter=()=>{
-    const categories=[
-        {categoryId:1, categoryName:"Electronics"},
-        {categoryId:2, categoryName:"Health and Fitness"},
-        {categoryId:3, categoryName:"Produce"},
-        {categoryId:4, categoryName:"Dairy"},
-    ];
+const Filter=({categories})=>{
+
+    // not using setter because whenever URL is updated, this variable is also updated
+    const [searchParams] = useSearchParams();
+    const params = new URLSearchParams(searchParams);
+    const pathName = useLocation().pathname;
+    const navigate = useNavigate();
 
     const [category,setCategory] = useState("all");
+    const [sortOrder,setSortOrder] = useState("asc");
+    const [searchTerm,setSearchTerm] = useState("");
 
+    useEffect(() => {
+      const currentCategory = searchParams.get("category") || "all";
+      const currentSortOrder = searchParams.get("sortBy") || "asc";
+      const currentSearchTerm= searchParams.get("keyword") || "";
+
+      setCategory(currentCategory);
+      setSearchTerm(currentSearchTerm);
+      setSortOrder(currentSortOrder);
+
+    }, [searchParams])
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            if(searchTerm)
+                params.set("keyword",searchTerm);
+            else
+                params.delete("keyword");
+            navigate(`${pathName}?${params}`);
+        }, 700);
+        
+
+        return()=>{
+            clearTimeout(handler);
+        }
+    }, [params, searchTerm, navigate, pathName]);
+    
+    
+
+    // setting query string using params and navigating to the formed URL
+    // this updates the searchParams state automatically and triggers the useEffect since they are bound together
     const handleCategoryChange=(event)=>{
+        const selectedCategory = event.target.value;
+        if(selectedCategory==="all"){
+            params.delete("category");
+        }
+        else{
+            params.set("category",selectedCategory);
+        }
+        navigate(`${pathName}?${params}`);
         setCategory(event.target.value);
+    };
+
+    const toggleSort = ()=>{
+        setSortOrder((prevOrder)=>{
+            const newOrder = (prevOrder==="asc")?"desc":"asc";
+            params.set("sortBy",newOrder);
+            navigate(`${pathName}?${params}`);
+            return newOrder;
+        });
+    };
+
+    const handleClearFilter = ()=>{
+        navigate({pathname: window.location.pathname});
     };
 
     return (
@@ -22,6 +76,8 @@ const Filter=()=>{
             {/* Search bar */}
             <div className="relative flex items-center 2xl:w-[450px] sm:w-[420px] w-full">
                 <input
+                    value={searchTerm}
+                    onChange={(e)=>setSearchTerm(e.target.value)}
                     type="text"
                     placeholder="Search Products"
                     className="border border-gray-400 text-slate-800 rounded-md 
@@ -55,15 +111,20 @@ const Filter=()=>{
                 {/* sort button and clear filter */}
                 <Tooltip title="Sorted by price: asc">
                     <Button variant="contained" color="primary"
+                    onClick={toggleSort}
                     className="flex items-center gap-2 h-10">
                         Sort By
-                        <FiArrowUp size={20}/>
+                        {sortOrder==="asc" ?
+                            (<FiArrowUp size={20}/>)
+                            : (<FiArrowDown size={20}/>)
+                        }
                     </Button>
                 </Tooltip>
 
                 <button className="flex items-center gap-2 bg-rose-900 rounded-md
                 transition duration-300 ease-in shadow-md focus:outline-none
-                text-white px-3 py-2">
+                text-white px-3 py-2"
+                onClick={handleClearFilter}>
                     <FiRefreshCw className="font-semibold" size={16}/>
                         Clear Filter
                 </button>
