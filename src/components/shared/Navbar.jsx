@@ -1,6 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { FaShoppingCart, FaSignInAlt, FaStore } from "react-icons/fa";
+import { RxCross2 } from "react-icons/rx";
+import { IoIosMenu } from "react-icons/io";
 import Badge from "@mui/material/Badge";
+import { useState } from "react";
 
 const Navbar = () => {
     const path = useLocation().pathname;
@@ -14,7 +17,11 @@ const Navbar = () => {
                     <span className="font-[Poppins]">E-Shop</span>
                 </Link>
 
-                <ul className="flex text-slate-800 gap-4">
+                <ul className={`flex sm:gap-10 gap-4 sm:items-center text-slate-800 sm:static
+                                absolute left-0 top-[70px] sm:shadow-none shadow-md
+                                ${navbarOpen ? "h-fit sm:pb-0 pb-5" : "h-0 overflow-hidden"}
+                                transition-all duration-100 sm:h-fit sm:bg-none bg-custom-gradient
+                                text-white sm:w-fit w-full sm:flex-row flex-col px-4 sm:px-0`}>
                     <li className="font-[500] transiition-all duration-150">
                         <Link to="/" className={`${
                             path==="/" ? "text-white font-semibold" : "text-gray-400"
@@ -69,6 +76,16 @@ const Navbar = () => {
                     </li>
 
                 </ul>
+
+                <button
+                    onClick={() => setNavbarOpen(!navbarOpen)}
+                    className="sm:hidden flex items-center sm:mt-0 mt-2">
+                    {navbarOpen ? (
+                        <RxCross2 className="text-white text-3xl" />
+                    ) : (
+                        <IoIosMenu className="text-white text-3xl" />
+                    )}
+                </button>
             </div>
         </div>
     );
