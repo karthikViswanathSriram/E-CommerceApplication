@@ -13,7 +13,8 @@ const ProductCard =({
         quantity,
         price,
         discount,
-        specialPrice
+        specialPrice,
+        about=false
 })=>{
     const [openProductViewModal,setOpenProductViewModal] = useState(false);
     const btnLoader = false;
@@ -21,8 +22,10 @@ const ProductCard =({
     const isAvailable = quantity && Number(quantity) > 0;
 
     const handleProductView = (product)=>{
-        setSelectedViewProduct(product);
-        setOpenProductViewModal(true);
+        if(!about){
+            setSelectedViewProduct(product);
+            setOpenProductViewModal(true);
+        }
     };
 
     return (
@@ -71,6 +74,7 @@ const ProductCard =({
                     <p className="text-gray-600 text-sm">{truncateText(description,80)}</p>
                 </div>
 
+                {!about && (
                 <div className="flex items-center justify-between">
                     {specialPrice ? (
                     // this div is for showing special price striking through original price
@@ -108,6 +112,10 @@ const ProductCard =({
                         {isAvailable ? "Add to Cart" : "Stock out"}
                     </Button>
                 </div>                
+                )}
+
+                {/* this div is for showing the product view button */}
+                
             </div>
             <ProductViewModal
                 open = {openProductViewModal}
