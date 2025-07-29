@@ -4,6 +4,9 @@ import ProductViewModal from "./ProductViewModal";
 import { FiShoppingCart } from "react-icons/fi";
 import { Button } from "@mui/material";
 import truncateText from "../../utils/truncateText";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../store/actions";
+import toast from "react-hot-toast";
 
 const ProductCard =({
         productId,
@@ -20,12 +23,17 @@ const ProductCard =({
     const btnLoader = false;
     const [selectedViewProduct, setSelectedViewProduct] = useState("");
     const isAvailable = quantity && Number(quantity) > 0;
+    const dispatch = useDispatch();
 
     const handleProductView = (product)=>{
         if(!about){
             setSelectedViewProduct(product);
             setOpenProductViewModal(true);
         }
+    };
+
+    const addToCartHandler = (cartItems)=>{
+        dispatch(addToCart(cartItems, 1,toast));
     };
 
     return (
@@ -105,7 +113,16 @@ const ProductCard =({
                     </button> */}
 
                     <Button variant="contained" color="primary" disabled={!isAvailable || btnLoader}
-                    onClick={()=>{}}
+                    onClick={()=>addToCartHandler({
+                        productId,
+                        productName,
+                        image,
+                        description,
+                        quantity,
+                        price,
+                        discount,
+                        specialPrice
+                    })}
                     className={`flex items-center gap-2 h-10 rounded-lg
                                 ${isAvailable ? "opacity-100" : "opacity-70"}`}>
                         <FiShoppingCart/>
