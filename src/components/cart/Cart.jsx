@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import ItemContent from "./ItemContent";
 import useProductFilter from "../../hooks/useProductFilter";
 import CartEmpty from "./CartEmpty";
+import { formatPrice } from "../../utils/formatPrice";
 
 const Cart = ()=>{
     const {cart} = useSelector((state) => state.carts);
@@ -58,7 +59,7 @@ const Cart = ()=>{
                 <div className="flex text-sm gap-1 flex-col">
                     <div className="flex justify-between w-full md:text-lg text-sm font-semibold">
                         <span>Subtotal</span>
-                        <span>$0.00</span>
+                        <span>{formatPrice(newCart?.totalPrice)}</span>
                     </div>
 
                     <p className="text-slate-500">
