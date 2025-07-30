@@ -4,9 +4,10 @@ import ProductViewModal from "./ProductViewModal";
 import { FiShoppingCart } from "react-icons/fi";
 import { Button } from "@mui/material";
 import truncateText from "../../utils/truncateText";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../store/actions";
 import toast from "react-hot-toast";
+import ItemContent from "../cart/ItemContent";
 
 const ProductCard =({
         productId,
@@ -24,6 +25,7 @@ const ProductCard =({
     const [selectedViewProduct, setSelectedViewProduct] = useState("");
     const isAvailable = quantity && Number(quantity) > 0;
     const dispatch = useDispatch();
+    const { cart } = useSelector((state)=>state.carts)
 
     const handleProductView = (product)=>{
         if(!about){
@@ -33,7 +35,16 @@ const ProductCard =({
     };
 
     const addToCartHandler = (cartItems)=>{
-        dispatch(addToCart(cartItems, 1,toast));
+        var itemExists = false
+        cart.map((item)=>{
+                itemExists = item.productId===cartItems.productId
+                return;
+            }
+        )        
+        if(itemExists)
+            toast.error("item already exists in cart")
+        else
+            dispatch(addToCart(cartItems, 1,toast));
     };
 
     return (
