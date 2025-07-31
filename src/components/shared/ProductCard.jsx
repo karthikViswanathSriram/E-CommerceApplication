@@ -49,7 +49,7 @@ const ProductCard =({
 
     return (
         <div className="border rounded-lg shadow-xl overflow-hidden 
-        transition-shadow duration-300">
+        transition-shadow duration-300 bg-gray-100/80">
 
             {/* below is for rendering the image which zooms on hover*/}
             <div onClick={()=>{
