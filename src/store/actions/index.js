@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import api from "../../api/api";
 
 export const fetchProducts = (queryString)=>async (dispatch)=>{
@@ -168,4 +169,119 @@ export const logout = (navigate,toast)=>(dispatch)=>{
     localStorage.removeItem("auth");
     toast.success("User successfully logged out");
     navigate("/login");
+}
+
+export const addUpdateUserAddress = 
+(sendData,toast, addressId, setOpenAddressModal,setLoader)=>async(dispatch)=>{
+    try {
+        setLoader(true);
+        if(addressId){
+            await api.put(`/addresses/${addressId}`,sendData);
+        } else {
+            await api.post('/addresses',sendData);
+        }
+        dispatch(getUserAddresses())
+        toast.success("Address saved successfully");
+    } catch (error) {
+        console.log(error);        
+        toast.error(error?.response?.data?.message || "Internal Serer Error")
+        dispatch({type: "IS_ERROR",payload:null});
+    } finally {
+        setLoader(false);
+        setOpenAddressModal(false);
+    }
+}
+
+export const getUserAddresses = ()=>async (dispatch)=>{
+    try{
+        dispatch({type:'IS_FETCHING'})
+        const { data } = await api.get(`/addresses`);        
+        dispatch({type: "FETCH_ADDRESS",payload:data});
+        dispatch({type:"IS_SUCCESS"});
+    }catch(error){
+        console.log(error);
+        dispatch({
+            type:"IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to fetch user address",
+        });
+    }
+};
+
+export const selectUserCheckoutAddress = (address)=>{
+    return {
+        type: "SELECT_CHECKOUT_ADDRESS",
+        payload: address
+    }
+}
+
+export const deleteUserAddress = (toast,addressId,setOpen)=>async (dispatch,getState)=>{
+    try{
+        dispatch({type:'IS_FETCHING'})
+        await api.delete(`/addresses/${addressId}`);
+        dispatch({type:"REMOVE_SELECTED_ADDRESS"})   
+        dispatch({type:"IS_SUCCESS"});    
+        dispatch(getUserAddresses())
+        toast.success("Address deleted successfully");        
+    }catch(error){
+        console.log(error);
+        dispatch({
+            type:"IS_ERROR",
+            payload: error?.response?.data?.message || "Address deletion failed",
+        });
+    } finally{
+        setOpen(false)
+    }
+};
+
+export const addPaymentMethod = (method) =>{
+    return {
+        type: "ADD_PAYMENT_METHOD",
+        payload: method
+    }
+}
+
+export const createUserCart = (sendcartItems)=>async (dispatch,getState)=>{
+    try{        
+        // dispatch({type:'IS_FETCHING'})
+        await api.post("/cart/create",sendcartItems);        
+        // await dispatch(getUserCart())
+        // dispatch({type:'IS_SUCCESS'})
+
+
+    }catch(error){
+        console.log(error);
+        dispatch({
+            type:"IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to create cart items",
+        });
+    }
+};
+
+export const getUserCart = ()=>async (dispatch,getState)=>{
+    try{
+        dispatch({type:'IS_FETCHING'})
+        const {data} = await api.get("/carts/users/cart");
+        dispatch({
+            type:"GET_USER_CART_PRODUCTS",
+            payload: data.products,
+            totalPrice: data.totalPrice,
+            cartId: data.cartId
+        })
+        localStorage.setItem("cartItems",JSON.stringify(getState().carts.cart))
+        dispatch({type:'IS_SUCCESS'})
+    }catch(error){
+        console.log(error);
+        dispatch({
+            type:"IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to get cart items",
+        });
+    }
+};
+
+export const updateCartPrice = (totalPrice,cartId)=>(dispatch)=>{
+    dispatch({
+        type:'UPDATE_CART_PRICE',
+        payload: totalPrice,
+        cartId: cartId
+    })
 }

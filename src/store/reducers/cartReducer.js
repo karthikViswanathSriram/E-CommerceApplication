@@ -41,6 +41,20 @@ export const cartReducer = (state=initialState,action)=>{
                 ),
             };
 
+        case "GET_USER_CART_PRODUCTS":
+            return{
+                ...state,
+                cart: action.payload,
+                totalPrice: action.totalPrice,
+                cartId: action.cartId
+            };
+        
+        case "UPDATE_CART_PRICE":
+            return {
+                ...state,
+                totalPrice: action.payload,
+                cartId:action.cartId
+            }
         default:
             return state;
     }

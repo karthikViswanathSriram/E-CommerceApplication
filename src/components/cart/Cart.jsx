@@ -7,15 +7,22 @@ import ItemContent from "./ItemContent";
 import useProductFilter from "../../hooks/useProductFilter";
 import CartEmpty from "./CartEmpty";
 import { formatPrice } from "../../utils/formatPrice";
+import { updateCartPrice } from "../../store/actions";
 
 const Cart = ()=>{
-    const {cart} = useSelector((state) => state.carts);
+    const {cart,cartId} = useSelector((state) => state.carts);
+    const dispatch = useDispatch();
+
     useProductFilter();
     const newCart = {...cart};
 
     newCart.totalPrice = cart?.reduce(
         (acc,cur) => acc + Number(cur?.specialPrice) * Number(cur?.quantity), 0
     );
+
+    const updateCart = () =>{
+        dispatch(updateCartPrice(newCart.totalPrice,cartId))
+    }
 
     if(!cart|| cart.length===0)
         return (<CartEmpty/>)
@@ -69,7 +76,7 @@ const Cart = ()=>{
                     <Link className="w-full flex justify-end" to="/checkout">
                         <Button variant="contained" color="primary"
                         className="w-[300px] px-4 py-2"
-                        onClick={()=>{}}>
+                        onClick={updateCart}>
                              <FaShoppingCart size={20}/>
                             <span className="font-semibold px-2">                               
                                 Checkout
