@@ -223,6 +223,7 @@ public class WebSecurityConfig {
                 userRepository.save(admin);
             });
 
+            /**
             Category c1 = categoryRepository.save(modelMapper.map(new CategoryDTO(null,"Electronics"),Category.class));
             Category c2 = categoryRepository.save(modelMapper.map(new CategoryDTO(null,"Health and Fitness"),Category.class));
             Category c3 = categoryRepository.save(modelMapper.map(new CategoryDTO(null,"Produce"),Category.class));
@@ -243,6 +244,7 @@ public class WebSecurityConfig {
             productRepository.save(p4);
             productRepository.save(p5);
             productRepository.save(p6);
+             **/
         };
     }
 }
